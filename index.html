@@ -6,13 +6,25 @@
   <title>🍅 פומודורו - טיימר למידה</title>
   <style>
     :root {
-      --tomato: #e23b2e;
-      --tomato-dark: #b71c1c;
-      --leaf: #5aa02c;
-      --leaf-dark: #3d7a1a;
-      --bg1: #fff3f0;
-      --bg2: #ffe0d6;
-      --text: #3a2b28;
+      --tomato: #4caf2e;
+      --tomato-dark: #2e7d1e;
+      --leaf: #1f5e12;
+      --leaf-dark: #143f0b;
+      --bg1: #f1fbe9;
+      --bg2: #d9f2c4;
+      --text: #243018;
+      --card: #ffffff;
+      --panel: rgba(255,255,255,0.85);
+      --sidebar-bg: #ffffff;
+    }
+
+    body.dark {
+      --bg1: #16210f;
+      --bg2: #2a3b1c;
+      --text: #e7f2dc;
+      --card: #243018;
+      --panel: rgba(31,42,22,0.92);
+      --sidebar-bg: #1b2613;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -46,12 +58,12 @@
     /* ---- העגבניה ---- */
     .tomato-wrap {
       position: relative;
-      width: 260px;
-      height: 250px;
+      width: min(260px, 70vw);
+      height: min(250px, 67vw);
       display: flex;
       align-items: center;
       justify-content: center;
-      filter: drop-shadow(0 18px 24px rgba(178, 28, 28, 0.28));
+      filter: drop-shadow(0 18px 24px rgba(46, 125, 30, 0.30));
     }
 
     .tomato-wrap.running { animation: pulse 2.4s ease-in-out infinite; }
@@ -75,7 +87,7 @@
       top: 56%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 3.2rem;
+      font-size: clamp(2rem, 12vw, 3.2rem);
       font-weight: 800;
       color: #fff;
       text-shadow: 0 2px 6px rgba(0,0,0,0.35);
@@ -85,11 +97,11 @@
 
     /* ---- כרטיס הבקרה ---- */
     .panel {
-      background: rgba(255,255,255,0.85);
+      background: var(--panel);
       backdrop-filter: blur(6px);
       border-radius: 22px;
       padding: 22px 24px;
-      box-shadow: 0 10px 30px rgba(178,28,28,0.12);
+      box-shadow: 0 10px 30px rgba(46,125,30,0.14);
       width: 100%;
       max-width: 360px;
       display: flex;
@@ -118,7 +130,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      background: #fff;
+      background: var(--card);
       border-radius: 14px;
       padding: 6px;
       box-shadow: inset 0 0 0 2px var(--bg2);
@@ -136,7 +148,7 @@
       cursor: pointer;
       transition: background 0.15s, transform 0.1s;
     }
-    .stepper button:hover { background: #ffcdbf; }
+    .stepper button:hover { background: #c2e8a4; }
     .stepper button:active { transform: scale(0.92); }
 
     .stepper input {
@@ -157,7 +169,7 @@
     .presets { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
     .presets button {
       border: none;
-      background: #fff;
+      background: var(--card);
       color: var(--tomato-dark);
       padding: 7px 14px;
       border-radius: 999px;
@@ -184,7 +196,7 @@
 
     .btn-primary { background: var(--tomato); color: #fff; }
     .btn-primary:hover { filter: brightness(1.06); }
-    .btn-secondary { background: #fff; color: var(--tomato-dark); box-shadow: inset 0 0 0 2px var(--bg2); }
+    .btn-secondary { background: var(--card); color: var(--tomato-dark); box-shadow: inset 0 0 0 2px var(--bg2); }
     .btn-secondary:hover { background: var(--bg2); }
 
     .status {
@@ -222,7 +234,7 @@
       font-size: 0.95rem;
       font-weight: 600;
       color: var(--text);
-      background: #fff;
+      background: var(--card);
       box-shadow: inset 0 0 0 2px var(--bg2);
       cursor: pointer;
       outline: none;
@@ -270,9 +282,337 @@
       margin-top: 6px;
       text-align: center;
     }
+
+    /* ================= תפריט הצד ================= */
+    .menu-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 30;
+      width: 48px;
+      height: 48px;
+      border: none;
+      border-radius: 14px;
+      background: var(--tomato);
+      color: #fff;
+      font-size: 1.4rem;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(46,125,30,0.3);
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .menu-toggle:hover { filter: brightness(1.08); }
+    .menu-toggle:active { transform: scale(0.92); }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      z-index: 40;
+    }
+    .overlay.show { opacity: 1; pointer-events: auto; }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: 320px;
+      max-width: 86vw;
+      background: var(--sidebar-bg);
+      box-shadow: -8px 0 30px rgba(0,0,0,0.18);
+      transform: translateX(100%);
+      transition: transform 0.32s cubic-bezier(.4,0,.2,1);
+      z-index: 50;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .sidebar.open { transform: translateX(0); }
+
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sidebar-header h2 { font-size: 1.2rem; font-weight: 800; }
+    .close-btn {
+      border: none;
+      background: var(--bg2);
+      color: var(--text);
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .close-btn:hover { filter: brightness(0.95); }
+
+    .tool {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: inset 0 0 0 2px var(--bg2);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .tool-title {
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tool-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .tool small { opacity: 0.65; font-size: 0.8rem; }
+
+    /* מתג הפעלה/כיבוי */
+    .switch { position: relative; width: 50px; height: 28px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch .track {
+      position: absolute; inset: 0;
+      background: var(--bg2);
+      border-radius: 999px;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .switch .track::before {
+      content: "";
+      position: absolute;
+      width: 22px; height: 22px;
+      right: 3px; top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .switch input:checked + .track { background: var(--tomato); }
+    .switch input:checked + .track::before { transform: translateX(-22px); }
+
+    .tool input[type=number] {
+      width: 56px;
+      border: none;
+      border-radius: 10px;
+      padding: 6px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text);
+      background: var(--bg1);
+      box-shadow: inset 0 0 0 2px var(--bg2);
+      outline: none;
+    }
+    .tool select {
+      border: none;
+      border-radius: 10px;
+      padding: 7px 10px;
+      font-weight: 600;
+      color: var(--text);
+      background: var(--bg1);
+      box-shadow: inset 0 0 0 2px var(--bg2);
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* פס התקדמות יעד */
+    .goal-bar {
+      height: 12px;
+      background: var(--bg2);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .goal-bar > div {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--tomato), var(--tomato-dark));
+      border-radius: 999px;
+      transition: width 0.4s;
+    }
+
+    /* רשימת משימות */
+    .task-add { display: flex; gap: 6px; }
+    .task-add input {
+      flex: 1;
+      border: none;
+      border-radius: 10px;
+      padding: 8px;
+      color: var(--text);
+      background: var(--bg1);
+      box-shadow: inset 0 0 0 2px var(--bg2);
+      outline: none;
+    }
+    .task-add button {
+      border: none;
+      border-radius: 10px;
+      width: 38px;
+      background: var(--tomato);
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .task-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .task-list li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg1);
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+    .task-list li.done span { text-decoration: line-through; opacity: 0.5; }
+    .task-list li span { flex: 1; word-break: break-word; }
+    .task-list input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--tomato); cursor: pointer; }
+    .task-del {
+      border: none; background: transparent; cursor: pointer;
+      color: var(--tomato-dark); font-size: 1rem; opacity: 0.6;
+    }
+    .task-del:hover { opacity: 1; }
+
+    .quote-box {
+      font-style: italic;
+      line-height: 1.5;
+      min-height: 48px;
+    }
+    .btn-small {
+      align-self: flex-start;
+      border: none;
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--bg2);
+      color: var(--text);
+    }
+    .btn-small:hover { filter: brightness(0.96); }
+    .btn-danger { background: #fde2dd; color: #b71c1c; }
+    body.dark .btn-danger { background: #4a1f1a; color: #ffb4ab; }
+
+    body { transition: background 0.3s, color 0.3s; }
+
+    /* ================= התאמה לטלפון ================= */
+    /* גופן 16px+ בשדות טקסט מונע "זום" אוטומטי באייפון */
+    .task-add input, #soundSelect, .tool select { font-size: 16px; }
+
+    @media (max-width: 520px) {
+      body { padding: 14px; padding-top: 68px; gap: 6px; justify-content: flex-start; }
+      h1 { font-size: 1.3rem; }
+      .subtitle { font-size: 0.85rem; margin-bottom: 8px; }
+      .panel { padding: 18px 16px; border-radius: 18px; }
+      .menu-toggle { top: 12px; right: 12px; width: 44px; height: 44px; }
+      .presets button { padding: 8px 16px; } /* יעד מגע נוח יותר */
+      .controls button { padding: 15px; }
+      .sidebar { width: 100%; max-width: 100%; }
+    }
+
+    /* מסך נמוך ושכוב — לצמצם רווחים אנכיים */
+    @media (max-height: 560px) and (orientation: landscape) {
+      body { justify-content: flex-start; padding-top: 56px; }
+    }
   </style>
 </head>
 <body>
+  <button class="menu-toggle" id="menuToggle" aria-label="פתח תפריט">☰</button>
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>⚙️ כלים ללמידה</h2>
+      <button class="close-btn" id="closeSidebar" aria-label="סגור">✕</button>
+    </div>
+
+    <!-- מצב כהה -->
+    <div class="tool">
+      <div class="tool-row">
+        <span class="tool-title">🌙 מצב כהה</span>
+        <label class="switch">
+          <input type="checkbox" id="darkToggle" />
+          <span class="track"></span>
+        </label>
+      </div>
+      <small>נוח לעיניים בלמידה בלילה</small>
+    </div>
+
+    <!-- יעד יומי -->
+    <div class="tool">
+      <div class="tool-row">
+        <span class="tool-title">🎯 יעד יומי</span>
+        <input type="number" id="goalInput" min="1" max="30" value="4" />
+      </div>
+      <div class="goal-bar"><div id="goalFill"></div></div>
+      <small id="goalText">0 מתוך 4 סבבים</small>
+    </div>
+
+    <!-- הפסקות אוטומטיות -->
+    <div class="tool">
+      <div class="tool-row">
+        <span class="tool-title">☕ הפסקות אוטומטיות</span>
+        <label class="switch">
+          <input type="checkbox" id="breakToggle" />
+          <span class="track"></span>
+        </label>
+      </div>
+      <div class="tool-row">
+        <small>אורך ההפסקה (דקות)</small>
+        <input type="number" id="breakLen" min="1" max="30" value="5" />
+      </div>
+      <small>בסיום סבב למידה יתחיל טיימר הפסקה אוטומטית</small>
+    </div>
+
+    <!-- רעשי רקע -->
+    <div class="tool">
+      <div class="tool-row">
+        <span class="tool-title">🎧 רעש רקע</span>
+        <select id="ambientSelect">
+          <option value="none">ללא</option>
+          <option value="rain">🌧️ גשם</option>
+          <option value="white">📻 רעש לבן</option>
+          <option value="brown">🟤 רעש חום</option>
+          <option value="waves">🌊 גלים</option>
+        </select>
+      </div>
+      <div class="tool-row">
+        <small>עוצמה</small>
+        <input type="range" id="ambientVol" min="0" max="1" step="0.05" value="0.4" style="flex:1; accent-color: var(--tomato);" />
+      </div>
+      <small>מתנגן ברקע בזמן הריכוז ועוזר להתמקד</small>
+    </div>
+
+    <!-- רשימת משימות -->
+    <div class="tool">
+      <span class="tool-title">✅ משימות להיום</span>
+      <div class="task-add">
+        <input type="text" id="taskInput" placeholder="מה ללמוד עכשיו?" maxlength="80" />
+        <button id="taskAdd" aria-label="הוסף">+</button>
+      </div>
+      <ul class="task-list" id="taskList"></ul>
+    </div>
+
+    <!-- ציטוט מוטיבציה -->
+    <div class="tool">
+      <span class="tool-title">💬 מוטיבציה</span>
+      <div class="quote-box" id="quoteBox"></div>
+      <button class="btn-small" id="quoteBtn">ציטוט חדש 🔄</button>
+    </div>
+
+    <!-- איפוס -->
+    <div class="tool">
+      <span class="tool-title">♻️ איפוס נתונים</span>
+      <small>מאפס את ספירת הסבבים והדקות של היום</small>
+      <button class="btn-small btn-danger" id="resetStats">אפס סטטיסטיקה</button>
+    </div>
+  </aside>
+
   <h1>🍅 פומודורו ללמידה</h1>
   <div class="subtitle">בחרו כמה זמן להתרכז, ותנו לעגבניה לעבוד בשבילכם</div>
 
@@ -281,9 +621,9 @@
       <!-- גוף העגבניה -->
       <defs>
         <radialGradient id="tomGrad" cx="38%" cy="32%" r="75%">
-          <stop offset="0%" stop-color="#ff6b5a" />
-          <stop offset="55%" stop-color="#e23b2e" />
-          <stop offset="100%" stop-color="#b71c1c" />
+          <stop offset="0%" stop-color="#9ee35a" />
+          <stop offset="55%" stop-color="#5aa82e" />
+          <stop offset="100%" stop-color="#357a1c" />
         </radialGradient>
       </defs>
       <ellipse cx="100" cy="118" rx="82" ry="74" fill="url(#tomGrad)" />
@@ -377,11 +717,33 @@
     const volVal      = document.getElementById('volVal');
     const durVal      = document.getElementById('durVal');
 
+    // תפריט צד
+    const menuToggle   = document.getElementById('menuToggle');
+    const closeSidebar = document.getElementById('closeSidebar');
+    const sidebar      = document.getElementById('sidebar');
+    const overlay      = document.getElementById('overlay');
+    const darkToggle   = document.getElementById('darkToggle');
+    const goalInput    = document.getElementById('goalInput');
+    const goalFill     = document.getElementById('goalFill');
+    const goalText     = document.getElementById('goalText');
+    const breakToggle  = document.getElementById('breakToggle');
+    const breakLen     = document.getElementById('breakLen');
+    const ambientSelect= document.getElementById('ambientSelect');
+    const ambientVol   = document.getElementById('ambientVol');
+    const taskInput    = document.getElementById('taskInput');
+    const taskAdd      = document.getElementById('taskAdd');
+    const taskList     = document.getElementById('taskList');
+    const quoteBox     = document.getElementById('quoteBox');
+    const quoteBtn     = document.getElementById('quoteBtn');
+    const resetStats   = document.getElementById('resetStats');
+
     let totalSeconds = 25 * 60;
     let remaining    = totalSeconds;
     let timerId      = null;
     let running      = false;
     let endTime      = 0; // חישוב מבוסס שעון אמת כדי שיהיה מדויק גם ברקע
+    let onBreak      = false; // האם אנחנו כרגע בהפסקה
+    let focusSeconds = totalSeconds; // אורך סבב הלמידה לשחזור אחרי הפסקה
 
     // --- מצב למידה היומי (נשמר בדפדפן) ---
     let sessionsToday = +(localStorage.getItem('pomo_sessions') || 0);
@@ -451,6 +813,7 @@
       tomatoWrap.classList.remove('done');
       // נדרש מחווה של המשתמש כדי להעיר את האודיו
       ensureAudio();
+      if (!onBreak) startAmbient();
     }
 
     function pause() {
@@ -459,16 +822,19 @@
       startBtn.textContent = '▶ המשך';
       statusEl.textContent = 'מושהה ⏸';
       tomatoWrap.classList.remove('running');
+      stopAmbient();
       render();
     }
 
     function reset() {
       running = false;
       clearInterval(timerId);
+      onBreak = false;
       remaining = totalSeconds;
       startBtn.textContent = '▶ התחל';
       statusEl.textContent = 'מוכנים כשתהיו 😊';
       tomatoWrap.classList.remove('running', 'done');
+      stopAmbient();
       render();
     }
 
@@ -478,9 +844,24 @@
       remaining = 0;
       render();
       startBtn.textContent = '▶ התחל';
-      statusEl.textContent = '🎉 כל הכבוד! סיימתם סבב למידה';
       tomatoWrap.classList.remove('running');
       tomatoWrap.classList.add('done');
+      stopAmbient();
+      playSelected();
+
+      // אם סיימנו הפסקה — חוזרים לסבב למידה רגיל ולא סופרים
+      if (onBreak) {
+        onBreak = false;
+        totalSeconds = focusSeconds;
+        remaining = totalSeconds;
+        syncInputs();
+        render();
+        statusEl.textContent = 'ההפסקה נגמרה — מוכנים לסבב נוסף 🚀';
+        notify('☕ ההפסקה נגמרה', 'בחזרה ללמידה!');
+        return;
+      }
+
+      statusEl.textContent = '🎉 כל הכבוד! סיימתם סבב למידה';
 
       // עדכון סטטיסטיקה
       sessionsToday += 1;
@@ -488,12 +869,33 @@
       localStorage.setItem('pomo_sessions', sessionsToday);
       localStorage.setItem('pomo_minutes', minutesToday);
       renderStats();
+      updateGoal();
+      notify('🍅 הזמן נגמר!', 'כל הכבוד, סיימתם סבב למידה 🎉');
 
-      playSelected();
+      // הפסקה אוטומטית
+      if (breakToggle.checked) startBreak();
+    }
 
-      // התראת דפדפן אם אושר
+    function startBreak() {
+      focusSeconds = totalSeconds;
+      onBreak = true;
+      const bl = Math.min(30, Math.max(1, Math.round(+breakLen.value || 5)));
+      totalSeconds = bl * 60;
+      remaining = totalSeconds;
+      syncInputs();
+      render();
+      running = true;
+      endTime = Date.now() + remaining * 1000;
+      timerId = setInterval(tick, 250);
+      startBtn.textContent = '⏸ השהה';
+      statusEl.textContent = `☕ הפסקה של ${bl} דק' — קצת אוויר 🌿`;
+      tomatoWrap.classList.add('running');
+      tomatoWrap.classList.remove('done');
+    }
+
+    function notify(title, body) {
       if (window.Notification && Notification.permission === 'granted') {
-        new Notification('🍅 הזמן נגמר!', { body: 'כל הכבוד, סיימתם סבב למידה 🎉' });
+        new Notification(title, { body });
       }
     }
 
@@ -648,6 +1050,178 @@
     volRange.addEventListener('input', () => { updateLabels(); localStorage.setItem('pomo_vol', volRange.value); });
     durRange.addEventListener('input', () => { updateLabels(); localStorage.setItem('pomo_dur', durRange.value); });
     previewBtn.addEventListener('click', playSelected);
+
+    // =================== תפריט הצד ===================
+
+    // --- פתיחה/סגירה ---
+    function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('show'); }
+    function closeSide()   { sidebar.classList.remove('open'); overlay.classList.remove('show'); }
+    menuToggle.addEventListener('click', openSidebar);
+    closeSidebar.addEventListener('click', closeSide);
+    overlay.addEventListener('click', closeSide);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSide(); });
+
+    // --- מצב כהה ---
+    function applyDark() { document.body.classList.toggle('dark', darkToggle.checked); }
+    darkToggle.checked = localStorage.getItem('pomo_dark') === '1';
+    applyDark();
+    darkToggle.addEventListener('change', () => {
+      applyDark();
+      localStorage.setItem('pomo_dark', darkToggle.checked ? '1' : '0');
+    });
+
+    // --- יעד יומי ---
+    function updateGoal() {
+      let goal = Math.min(30, Math.max(1, Math.round(+goalInput.value || 1)));
+      const pct = Math.min(100, (sessionsToday / goal) * 100);
+      goalFill.style.width = pct + '%';
+      const reached = sessionsToday >= goal;
+      goalText.textContent = reached
+        ? `🏆 כל הכבוד! השגתם את היעד (${sessionsToday}/${goal})`
+        : `${sessionsToday} מתוך ${goal} סבבים`;
+    }
+    goalInput.value = localStorage.getItem('pomo_goal') || '4';
+    goalInput.addEventListener('input', () => {
+      localStorage.setItem('pomo_goal', goalInput.value);
+      updateGoal();
+    });
+    updateGoal();
+
+    // --- הפסקות אוטומטיות (שמירת העדפות) ---
+    breakToggle.checked = localStorage.getItem('pomo_break') === '1';
+    breakLen.value = localStorage.getItem('pomo_breaklen') || '5';
+    breakToggle.addEventListener('change', () => localStorage.setItem('pomo_break', breakToggle.checked ? '1' : '0'));
+    breakLen.addEventListener('input', () => localStorage.setItem('pomo_breaklen', breakLen.value));
+
+    // --- רעשי רקע (Web Audio) ---
+    let ambientNodes = null;
+    function makeNoiseBuffer(brown) {
+      const len = audioCtx.sampleRate * 2;
+      const buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+      const data = buf.getChannelData(0);
+      let last = 0;
+      for (let i = 0; i < len; i++) {
+        const w = Math.random() * 2 - 1;
+        if (brown) { last = (last + 0.02 * w) / 1.02; data[i] = last * 3.5; }
+        else { data[i] = w; }
+      }
+      return buf;
+    }
+    function startAmbient() {
+      stopAmbient();
+      const type = ambientSelect.value;
+      if (type === 'none') return;
+      ensureAudio();
+      if (!audioCtx) return;
+      const src = audioCtx.createBufferSource();
+      src.buffer = makeNoiseBuffer(type === 'brown' || type === 'waves');
+      src.loop = true;
+      const gain = audioCtx.createGain();
+      gain.gain.value = parseFloat(ambientVol.value) * 0.7;
+      let head = src;
+      if (type === 'rain') {
+        const bp = audioCtx.createBiquadFilter();
+        bp.type = 'bandpass'; bp.frequency.value = 1400; bp.Q.value = 0.6;
+        src.connect(bp); head = bp;
+      } else if (type === 'white') {
+        const lp = audioCtx.createBiquadFilter();
+        lp.type = 'lowpass'; lp.frequency.value = 9000;
+        src.connect(lp); head = lp;
+      }
+      head.connect(gain).connect(audioCtx.destination);
+      let lfo = null;
+      if (type === 'waves') {
+        lfo = audioCtx.createOscillator();
+        lfo.frequency.value = 0.15;
+        const lg = audioCtx.createGain();
+        lg.gain.value = parseFloat(ambientVol.value) * 0.45;
+        lfo.connect(lg).connect(gain.gain);
+        lfo.start();
+      }
+      src.start();
+      ambientNodes = { src, gain, lfo };
+    }
+    function stopAmbient() {
+      if (!ambientNodes) return;
+      try { ambientNodes.src.stop(); } catch (e) {}
+      try { if (ambientNodes.lfo) ambientNodes.lfo.stop(); } catch (e) {}
+      ambientNodes = null;
+    }
+    ambientSelect.value = localStorage.getItem('pomo_ambient') || 'none';
+    ambientVol.value = localStorage.getItem('pomo_ambientvol') || '0.4';
+    ambientSelect.addEventListener('change', () => {
+      localStorage.setItem('pomo_ambient', ambientSelect.value);
+      if (running && !onBreak) startAmbient(); // החלפה תוך כדי ריצה
+      else if (ambientNodes) stopAmbient();
+    });
+    ambientVol.addEventListener('input', () => {
+      localStorage.setItem('pomo_ambientvol', ambientVol.value);
+      if (ambientNodes) ambientNodes.gain.gain.value = parseFloat(ambientVol.value) * 0.7;
+    });
+
+    // --- רשימת משימות ---
+    let tasks = [];
+    try { tasks = JSON.parse(localStorage.getItem('pomo_tasks') || '[]'); } catch (e) { tasks = []; }
+    function saveTasks() { localStorage.setItem('pomo_tasks', JSON.stringify(tasks)); }
+    function renderTasks() {
+      taskList.innerHTML = '';
+      tasks.forEach((t, i) => {
+        const li = document.createElement('li');
+        if (t.done) li.classList.add('done');
+        const cb = document.createElement('input');
+        cb.type = 'checkbox'; cb.checked = t.done;
+        cb.addEventListener('change', () => { tasks[i].done = cb.checked; saveTasks(); renderTasks(); });
+        const span = document.createElement('span');
+        span.textContent = t.text;
+        const del = document.createElement('button');
+        del.className = 'task-del'; del.textContent = '🗑';
+        del.addEventListener('click', () => { tasks.splice(i, 1); saveTasks(); renderTasks(); });
+        li.append(cb, span, del);
+        taskList.appendChild(li);
+      });
+    }
+    function addTask() {
+      const text = taskInput.value.trim();
+      if (!text) return;
+      tasks.push({ text, done: false });
+      taskInput.value = '';
+      saveTasks(); renderTasks();
+    }
+    taskAdd.addEventListener('click', addTask);
+    taskInput.addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+    renderTasks();
+
+    // --- ציטוטי מוטיבציה ---
+    const QUOTES = [
+      'ההצלחה היא סכום של מאמצים קטנים שחוזרים על עצמם יום אחר יום.',
+      'אל תפסיקו כשאתם עייפים — תפסיקו כשסיימתם.',
+      'הדרך היחידה לעשות עבודה נהדרת היא לאהוב את מה שאתם עושים.',
+      'כל מומחה היה פעם מתחיל.',
+      'משמעת היא הגשר בין מטרות להישגים.',
+      'דקה של ריכוז שווה שעה של פיזור.',
+      'לא צריך להיות מושלם — צריך רק להתחיל.',
+      'הצעד הקטן של היום הוא הקפיצה הגדולה של מחר.',
+      'הידע הוא ההשקעה היחידה שמחזירה תמיד.',
+      'מי שלא מוותר — מנצח.',
+      'התרכזו בהתקדמות, לא בשלמות.',
+      'גם מסע של אלף קילומטר מתחיל בצעד אחד.',
+    ];
+    function newQuote() {
+      const i = Math.floor(Math.random() * QUOTES.length);
+      quoteBox.textContent = '"' + QUOTES[i] + '"';
+    }
+    quoteBtn.addEventListener('click', newQuote);
+    newQuote();
+
+    // --- איפוס סטטיסטיקה ---
+    resetStats.addEventListener('click', () => {
+      sessionsToday = 0;
+      minutesToday = 0;
+      localStorage.setItem('pomo_sessions', 0);
+      localStorage.setItem('pomo_minutes', 0);
+      renderStats();
+      updateGoal();
+    });
 
     // בקשת רשות להתראות (לא חובה)
     if (window.Notification && Notification.permission === 'default') {
